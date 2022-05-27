@@ -8,43 +8,66 @@ import {
 } from "./store/bugs";
 import { projectAdded } from "./store/projects";
 import { addUser } from "./store/users";
+import * as actions from "./store/api";
+import { loadBugs } from "./store/bugs";
 
 const store = configureStore();
-
-store.subscribe(() => {
-  console.log("Store updated!");
-});
-
-store.dispatch(bugAdded({ description: "Bug 1" }));
-store.dispatch(bugAdded({ description: "Bug 2" }));
-store.dispatch(bugAdded({ description: "Bug 3" }));
-store.dispatch(bugResolved({ id: 1 }));
+// console.log("store", store);
 
 store.dispatch(
-  projectAdded({
-    name: "Project 1",
-  })
-);
-store.dispatch(
-  projectAdded({
-    name: "Project 2",
+  actions.apiCallBegan({
+    url: "bugs",
+    onSuccess: "bugs/bugsReceived",
   })
 );
 
-// Add users
-store.dispatch(addUser({ name: "Rizal" }));
-store.dispatch(addUser({ name: "Razli" }));
+// store.dispatch(loadBugs());
 
-// Assign bugs
-store.dispatch(bugAssigned({ bugId: 1, userId: 1 }));
-store.dispatch(bugAssigned({ bugId: 2, userId: 2 }));
+// store.dispatch({
+//   type: "apiCallBegan",
+//   payload: {
+//     url: "bugs",
+//     onSuccess: "bugsReceived",
+//     onError: "apiRequestFailed",
+//   },
+// });
 
-console.log("state", store.getState());
+// store.dispatch({ type: "error", payload: { message: "An error occured" } });
 
-//* Get unresolved bugs
-const unresolvedBugs = getUnresolvedBugs(store.getState());
-console.log("unresolvedBugs", unresolvedBugs);
+// store.subscribe(() => {
+//   console.log("Store updated!");
+// });
 
-//* Get assigned bugs
-const assignedBugs = getAssignedBugs(1)(store.getState());
-console.log("assignedBugs", assignedBugs);
+// store.dispatch(bugAdded({ description: "Bug 1" }));
+// store.dispatch(bugAdded({ description: "Bug 2" }));
+// store.dispatch(bugAdded({ description: "Bug 3" }));
+// store.dispatch(bugResolved({ id: 1 }));
+
+// store.dispatch(
+//   projectAdded({
+//     name: "Project 1",
+//   })
+// );
+// store.dispatch(
+//   projectAdded({
+//     name: "Project 2",
+//   })
+// );
+
+// // Add users
+// store.dispatch(addUser({ name: "Rizal" }));
+// store.dispatch(addUser({ name: "Razli" }));
+
+// // Assign bugs
+// store.dispatch(bugAssigned({ bugId: 1, userId: 1 }));
+// store.dispatch(bugAssigned({ bugId: 2, userId: 2 }));
+
+// console.log("state", store.getState());
+
+// //* Get unresolved bugs
+// const unresolvedBugs = getUnresolvedBugs(store.getState());
+// console.log("unresolvedBugs", unresolvedBugs);
+
+// //* Get assigned bugs
+// const assignedBugs = getAssignedBugs(1)(store.getState());
+// console.log("assignedBugs", assignedBugs);

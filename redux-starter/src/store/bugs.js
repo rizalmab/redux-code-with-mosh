@@ -1,34 +1,55 @@
 import { createAction, createReducer, createSlice } from "@reduxjs/toolkit";
 import { createSelector } from "reselect";
+import { apiCallBegan } from "./api";
 
 // Reducer
 let lastId = 1;
 
 const bugsSlice = createSlice({
   name: "bugs",
-  initialState: [],
+  initialState: {
+    list: [],
+    loading: false,
+    lastFetch: null,
+  },
   reducers: {
     bugAdded: (bugs, action) => {
-      bugs.push({
+      bugs.list.push({
         id: lastId++,
         description: action.payload.description,
         resolved: false,
       });
     },
     bugResolved: (bugs, action) => {
-      const index = bugs.findIndex((bug) => bug.id === action.payload.id);
-      bugs[index].resolved = true;
+      const index = bugs.list.findIndex((bug) => bug.id === action.payload.id);
+      bugs.list[index].resolved = true;
     },
     bugAssigned: (bugs, action) => {
       // change the specific bug's 'assignedTo' property to specific team member
-      const index = bugs.findIndex((bug) => bug.id === action.payload.bugId);
-      bugs[index].assignedToUserId = action.payload.userId;
+      const index = bugs.list.findIndex(
+        (bug) => bug.id === action.payload.bugId
+      );
+      bugs.list[index].assignedToUserId = action.payload.userId;
+    },
+    bugsReceived: (bugs, action) => {
+      // push the action payload into bugs.list
+      bugs.list.push(action.payload);
     },
   },
 });
 
-export const { bugAdded, bugResolved, bugAssigned } = bugsSlice.actions;
+export const { bugAdded, bugResolved, bugAssigned, bugsReceived } =
+  bugsSlice.actions;
 export default bugsSlice.reducer;
+
+// Action creator
+// Create a loadBugs() function
+export const loadBugs = () => {
+  apiCallBegan({
+    url: "bugs",
+    onSuccess: "bugs/bugsReceived",
+  });
+};
 
 // Selector
 export const getUnresolvedBugs = createSelector(
